@@ -4,17 +4,46 @@ var mysql = require('mysql');
 var inquirer = require('inquirer');
 //config has MySql credentials and it is gitignored
 var config = require('./config.js')
+//npm to console log a table
+require('console.table');
 
 //create a connection object to bamazon db
 var connection = mysql.createConnection(config.sqlConfig);
 
 //connect to the db and call function to create products
 connection.connect(function(err){
-    //addProduct();
-    //viewSaleProducts();
-    //viewLowInvetory();
-    addInventory();
+    //call the init function
+    managerMenu();
 });
+
+//function to display the actions available for a manager to perform
+function managerMenu(){
+    inquirer.prompt([
+		{
+			  type: "list",
+		      message: "Select an operation to perform",
+              name: "mgrmenu",
+              choices: ['1 - View Products', '2 - View Low Inventory', '3 - Add to Inventory', '4 - Add New Product', '5 - Exit']
+		},
+	]).then(function(response){
+        if(response.mgrmenu.includes(1)){
+            viewSaleProducts();
+        }
+        else if(response.mgrmenu.includes(2)){
+            viewLowInvetory();
+        }
+        else if(response.mgrmenu.includes(3)){
+            viewSaleProducts(addInventory);
+        }
+        else if(response.mgrmenu.includes(4)){
+            addProduct();
+        }
+        else{
+            //close the connection
+            connection.end();
+        }
+    });
+}
 
 //function to add new products into the db
 function addProduct(){
@@ -26,8 +55,8 @@ function addProduct(){
         },
         {
             type: "input",
-            message: "Enter the Department Name:",
-            name: "deptname"                        
+            message: "Enter the Department Id:",
+            name: "deptid"                        
         },
         {
             type: "input",
@@ -45,90 +74,105 @@ function addProduct(){
             'insert into products set ?', 
             {
                 product_name: add.prodname,
-                department_name: add.deptname,
+                department_id: add.id,
                 price: add.prodprice,
                 stock_qty: add.prodstock
             },
             function(err, res){
                 if(err) throw err;
                 if(res.affectedRows>0){
-                    console.log("New product has been added successfully!");
+                    console.log("\nNew product has been added successfully!\n");
+                    //call the init function
+                    managerMenu();
                 }
         });
+
     });
 }
 
-function viewSaleProducts(){
+//function to get all the products that are being sold from db and calls display function
+//also has a callback which will be used for add invetory function if that action is selected
+function viewSaleProducts(callback){
         //create a query to select all the products
         var allprods = connection.query(
-        'select * from products', 
+        'select item_id, product_name, department_id, price, stock_qty from products', 
         function(err, res){
             if(err){
                 throw err;
             }
             else{
-                displayMgrview(res);
+                console.log('\n');
+                console.table(res);
+                //if call back exists call that function
+                if(callback){
+                    callback();
+                }
+                //else display the products
+                else{
+                    managerMenu();
+                }
             }
     });
 }
 
+//function to get all the products whose stock qty < 5 from db and calls display function
 function viewLowInvetory(){
-        //create a query to select all the products
+        //create a query to select products with stock qty < 5
         var lowprods = connection.query(
-        'select * from products where stock_qty < 5', 
+        'select item_id, product_name, department_id, price, stock_qty from products where stock_qty < 5', 
         function(err, res){
             if(err){
                 throw err;
             }
             else{
-                displayMgrview(res);
+                console.log('\n');
+                console.table(res);
+                managerMenu();
             }
     });
 }
 
-
-function displayMgrview(res){
-        console.log("   Item_ID    | Item_Name                         | Item_Price | Stock_Quantity");
-        console.log("-------------------------------------------------------------------------------");
-        //loop through to display the product ONLY if the stock qty is greater than 0
-        for(i=0; i<res.length;i++){
-                console.log(res[i].item_id+"    | "+res[i].product_name+"   | "+res[i].price+"  | "+res[i].stock_qty);
-        }
-        if(i===res.length){
-            return true;
-        }
-}
-
-let p = new Promise((resolve, reject) => {
-    var results=viewSaleProducts();
-    if(!results){
-        reject('error');
-    }
-    else{
-        resolve(results);
-    }
-});
-
+//function to add items to existing stock qty for a selected item by the manager
 function addInventory(){
-    p.then(function(){
-        inquirer.prompt(
+    
+        inquirer.prompt([
             {
                 type: "input",
-                message: "Enter the Item_Id you want to place order for:",
+                message: "Enter the Item_Id you want to add stock for:",
                 name: "itemid"                        
             },
             {
                 type: "input",
-                message: "Enter the quantity you want to order:",
+                message: "Enter the quantity you want to add:",
                 name: "qty"                        
             }
-            //call the function to place the order
-        ]).then(function(order){
-            placeOrder(order);
-
-        });
-    });
+            
+        ]).then(function(add){
+            //query to update the stock qty
+                var updatequery = connection.query(
+                    'update products set stock_qty=stock_qty+'+add.qty+' where item_id='+add.itemid,
+                    function(err, upd){
+                        if(err){
+                            throw err;
+                        }
+                        //display the updated qty
+                        else{
+                            var addquery = connection.query(
+                                'select * from products where item_id='+add.itemid,
+                                function(err, curqty){
+                                    if(err){
+                                        throw err;
+                                    }
+                                    else{
+                                        console.log("\nCurrent stock quantity for the product "+curqty[0].product_name+" is "+curqty[0].stock_qty+"\n");
+                                        managerMenu();
+                                    }
+                                }
+                            )
+                        }
+                    });
                     
+                });                
 }
 
 
