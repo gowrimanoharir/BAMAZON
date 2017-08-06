@@ -19,7 +19,7 @@
    * Create New Department
 
 
-##Customer App Functionalities
+## Customer App Functionalities
 
 1. Display list of all products whose stock quantity is > 0
 2. Prompts the user to enter item id and quantity they want to purchase 
@@ -29,7 +29,7 @@
 6. If Yes, repeat from step 1
 7. If No, displays the final bill amount and exits the app
 
-##Manager App Functionalities
+## Manager App Functionalities
 
 1. Displays manager menu with below options
     1.1 View Products for Sale - Displays all the products in the inventory
@@ -40,7 +40,7 @@
 2. When user selects option  1 - 4 the app performs that function and then displays the menu again
 3. With option 5 exits the app
 
-##Supervisor App Functionalities
+## Supervisor App Functionalities
 
 1. Displays the supervisor menu with below options
     1.1 View Product Sales by Department - Displays summary of sales by department calculating the Profit as (Product Sales for that department - Over Head Costs for that department)
