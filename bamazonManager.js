@@ -74,7 +74,7 @@ function addProduct(){
             'insert into products set ?', 
             {
                 product_name: add.prodname,
-                department_id: add.id,
+                department_id: add.deptid,
                 price: add.prodprice,
                 stock_qty: add.prodstock
             },
@@ -95,7 +95,7 @@ function addProduct(){
 function viewSaleProducts(callback){
         //create a query to select all the products
         var allprods = connection.query(
-        'select item_id, product_name, department_id, price, stock_qty from products', 
+        'select item_id, product_name, department_id, price, stock_qty, product_sales from products', 
         function(err, res){
             if(err){
                 throw err;
@@ -119,7 +119,7 @@ function viewSaleProducts(callback){
 function viewLowInvetory(){
         //create a query to select products with stock qty < 5
         var lowprods = connection.query(
-        'select item_id, product_name, department_id, price, stock_qty from products where stock_qty < 5', 
+        'select item_id, product_name, department_id, price, stock_qty, product_sales from products where stock_qty < 5', 
         function(err, res){
             if(err){
                 throw err;

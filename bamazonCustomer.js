@@ -23,7 +23,7 @@ connection.connect(function(err){
 function displayProducts(){
         //create a query to select all the products
         var displayquery = connection.query(
-        'select item_id, product_name, price from products', 
+        'select item_id, product_name, price from products where stock_qty > 0', 
         function(err, res){
             if(err){
                 throw err;
@@ -58,7 +58,7 @@ function placeOrder(order){
     /*create a query to update the products table to reduce the stock qty by ordered qty and increase product sale for order price
     for the record that matches the user entered id and if the stock is available for the user entered qty*/
     var updatequery = connection.query(
-        'update products set stock_qty=stock_qty-'+order.qty+', product_sales=product_sales+'+order.qty+'*price where item_id='+order.itemid+' and stock_qty-'+order.qty+' > 0',
+        'update products set stock_qty=stock_qty-'+order.qty+', product_sales=product_sales+'+order.qty+'*price where item_id='+order.itemid+' and stock_qty-'+order.qty+' >= 0',
         function(err, upd){
             if(err){
                 throw err;

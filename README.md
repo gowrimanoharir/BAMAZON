@@ -1,4 +1,4 @@
-# BAMAZON - NODE CLI/MySQL application with below functionalities
+# BAMAZON - NODE CLI/MySQL application with below categories
 
 1. Customer app that allows the customers to buy products
 
@@ -48,5 +48,6 @@
     1.3 Exit - to exit the app
 2. When user selects option  1 - 2 the app performs that function and then displays the menu again
 3. With option 3 exits the app
+
 
 

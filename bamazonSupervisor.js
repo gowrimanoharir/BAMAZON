@@ -72,13 +72,14 @@ function viewSalebyDept(){
         //create a query to select all the products
         var dispProds=[];
         var displayquery = connection.query(
-        'select d.department_id, d.department_name, d.over_head_costs, sum(p.product_sales) as product_sales, (p.product_sales-d.over_head_costs) as profit from bamazon_db.products p inner join bamazon_db.departments d on p.department_id = d.department_id group by p.department_id',         
+            //through join display the product sales by dept and calculate profits
+        'select d.department_id, d.department_name, d.over_head_costs, sum(p.product_sales) as product_sales, (p.product_sales-d.over_head_costs) as profit from bamazon_db.products p right join bamazon_db.departments d on p.department_id = d.department_id group by p.department_id',         
         function(err, res){
             if(err){
                 throw err;
             }
             else{
-                //loop through to build the product array ONLY if the stock qty is greater than 0 and with only required display columns
+               
                 console.table(res);
                 superMenu();
             }
