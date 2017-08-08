@@ -49,5 +49,7 @@
 2. When user selects option  1 - 2 the app performs that function and then displays the menu again
 3. With option 3 exits the app
 
-
+![MySQL before Demo Video](https://drive.google.com/file/d/0B8dv28A56phEUFN4UzAyaEpWdDQ/view)
+![Bamazon Demo Video](https://drive.google.com/file/d/0B8dv28A56phETmNzemFTTzFrLVk/view)
+![MySQL after Demo Video](https://drive.google.com/file/d/0B8dv28A56phEYTlCVlQ1Y1VLUkU/view)
 
